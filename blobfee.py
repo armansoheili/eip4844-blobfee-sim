@@ -147,6 +147,19 @@ class BlobFeeSimulator:
         """Apply a list of per-block blob counts; return the fee trajectory."""
         return [self.step(n) for n in blob_counts]
 
+    def clearance_blocks(self):
+        """Empty blocks needed to drain the current excess back to zero.
+
+        Each empty block sheds one target's worth of blob gas.
+
+        >>> sim = BlobFeeSimulator(excess=786432)
+        >>> sim.clearance_blocks()
+        2
+        >>> BlobFeeSimulator().clearance_blocks()
+        0
+        """
+        return -(-self.excess // TARGET_BLOB_GAS_PER_BLOCK)
+
 
 def demo():
     """Fee trajectory under a blob surge, then a quiet period."""
